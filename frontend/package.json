@@ -1,0 +1,32 @@
+{
+  "name": "frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "jest"
+  },
+  "dependencies": {
+    "@paypal/paypal-js": "^8.1.2",
+    "chart.js": "^4.4.4",
+    "lodash": "^4.17.21",
+    "vue": "^3.5.8",
+    "vue-chartjs": "^5.3.1",
+    "vue-router": "^4.4.5",
+    "vuex": "^4.1.0",
+    "vuex-persistedstate": "^4.1.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.25.7",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "@vue/test-utils": "^2.4.0-alpha.2",
+    "babel-jest": "^26.6.3",
+    "flush-promises": "^1.0.2",
+    "jest": "^26.6.3",
+    "vite": "^5.4.7",
+    "vue-jest": "^5.0.0-alpha.10"
+  }
+}
