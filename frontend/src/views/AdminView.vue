@@ -28,9 +28,9 @@
             <i class="fa-solid fa-arrow-left"></i> <!-- Left Arrow Icon -->
           </div>
           <!-- Period Selection Buttons -->
-          <button :class="{ active: period === 'week' }" @click="changePeriod('week')">Week</button>
-          <button :class="{ active: period === 'month' }" @click="changePeriod('month')">Month</button>
-          <button :class="{ active: period === 'year' }" @click="changePeriod('year')">Year</button>
+          <button :class="{ active: period === 'week', 'toggle-button': true }" @click="changePeriod('week')">Week</button>
+          <button :class="{ active: period === 'month', 'toggle-button': true }" @click="changePeriod('month')">Month</button>
+          <button :class="{ active: period === 'year', 'toggle-button': true }" @click="changePeriod('year')">Year</button>
         </div>
 
         <!-- Chart Display Container -->
