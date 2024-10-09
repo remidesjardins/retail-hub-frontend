@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:18
 
 # install simple http server for serving static content
 RUN npm install -g http-server
@@ -20,4 +20,4 @@ RUN npm run build
 
 EXPOSE 8081
 
-CMD [ "http-server", "dist" ]
+CMD [ "http-server", "dist", "-p", "8081" ]
