@@ -63,23 +63,33 @@ export default {
      * Called when the component is mounted.
      */
     async fetchGetAlert() {
+      const token = localStorage.getItem('authToken');
       const requestOptions = {
         method: "GET",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        redirect: "follow",
+      };
+
+      const requestOptions2 = {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
         redirect: "follow",
       };
 
       try {
-
-        const requestOptions2 = {
-          method: "POST",
-          redirect: "follow"
-        };
-
         await fetch("https://com.servhub.fr/api/alerts/ai", requestOptions2)
             .then((res) => {
-              console.log("Fetching ia prediction successfully", res)})
+              console.log("Fetching AI prediction successfully", res);
+            })
             .catch(err => {
-              console.log(err)})
+              console.log(err);
+            });
 
         const response = await fetch("https://com.servhub.fr/api/alerts/", requestOptions);
         const result = await response.json();
@@ -99,8 +109,13 @@ export default {
      */
     async deleteAlert(alertId) {
       if (confirm("Are you sure you want to delete this restock alert?")) {
+        const token = localStorage.getItem('authToken');
         const requestOptions = {
           method: "DELETE",
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
           redirect: "follow",
         };
 
@@ -109,7 +124,6 @@ export default {
           if (response.ok) {
             const result = await response.json();
             console.log("Deleted Alert:", result);
-            // Remove the deleted alert from the local list
             this.restockAlerts = this.restockAlerts.filter(alert => alert._id !== alertId);
             alert("Restock alert deleted successfully!");
           } else {

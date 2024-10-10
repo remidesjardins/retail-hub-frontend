@@ -239,10 +239,14 @@ export default {
 
         const total_price = this.total;
         const client_name = `${this.client.firstName} ${this.client.lastName}`;
+        const token = localStorage.getItem('authToken');
 
         // Create a new sale record in the backend
         const saleResponse = await fetch("https://com.servhub.fr/api/sales/", {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
           method: "POST",
           body: JSON.stringify({
             products,
@@ -250,7 +254,7 @@ export default {
             customer_id: this.client._id,
             payment_status: this.paymentStatus,
             payment_method: this.paymentMethod,
-            soldBy: "66fdffb56790cc1514a6a267" // Example seller ID
+            soldBy: this.$store.state.userId
           }),
           redirect: "follow"
         });
@@ -799,6 +803,12 @@ button:hover {
   justify-content: space-between; /* Ensures elements are well-spaced within the summary */
   position: absolute;
   right: .5rem;
+  overflow: scroll;
+}
+
+.totals{
+  margin-top: 50px;
+  margin-bottom: 50px;
 }
 
 </style>

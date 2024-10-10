@@ -101,11 +101,13 @@ export default {
           Slot: this.placement.slotCode.trim(),
         };
 
+        const accessToken = this.$store.state.userToken;
         // Make the API call to update the Slot Code for the product
         const response = await fetch(`https://com.servhub.fr/api/products/${this.placement.SKU}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
           },
           body: JSON.stringify(placementData),
         });

@@ -141,10 +141,17 @@ export default {
      * Emits an event to update the productList in the parent component and caches product images.
      */
     fetchProducts() {
-      fetch("https://com.servhub.fr/api/products")
+      const token = localStorage.getItem('authToken');
+      fetch("https://com.servhub.fr/api/products", {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
           .then((response) => response.json())
           .then((result) => {
-            this.$emit("updateProducts", result); // Emit to parent to update productList
+            this.$emit("updateProducts", result);
             result.forEach((product) => this.getProductImage(product.SKU));
           })
           .catch((error) => console.log("Error fetching products:", error));

@@ -134,7 +134,18 @@ export default {
      * Updates the products array with the fetched data.
      */
     fetchInitialProducts() {
-      fetch('https://com.servhub.fr/api/products')
+      const token = localStorage.getItem('authToken');  // Retrieve the token from localStorage
+      if (!token) {
+        console.error('No authentication token found');
+        return;
+      }
+      fetch('https://com.servhub.fr/api/products', {
+        method: 'GET',  // Assuming a GET request
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
           .then(response => {
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
@@ -142,7 +153,8 @@ export default {
             return response.json();
           })
           .then(data => {
-            this.updateProducts(data);
+            this.updateProducts(data);  // Call your method to update products
+
           })
           .catch(error => {
             console.error('Error fetching products:', error.message);
@@ -203,23 +215,48 @@ export default {
 }
 
 .home-container {
+  display: flex;
+  flex-direction: column;
   margin-left: 3.75rem;
   max-width: 100vw;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  flex-direction: row;
+  overflow-x: hidden; /* Prevent horizontal scroll on smaller screens */
   height: 100vh;
 }
 
 .content {
-  margin-left: 1.25rem;
   flex-grow: 1;
   padding: 1.25rem;
+  display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
   gap: 1.25rem;
-  height: 100%; /* Ensure the content takes full height */
+  margin-left: 1.25rem;
 }
 
+@media (max-width: 768px) {
+  .home-container {
+    margin-left: 0;
+    padding: 0.5rem;
+  }
+
+  .content {
+    margin-left: 60px;
+  }
+
+  #product-list-text {
+    font-size: 1.1rem; /* Adjust font size for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 0.5rem;
+    margin-left: 60px;
+    gap: 0.75rem;
+  }
+
+  #product-list-text {
+    font-size: 1rem; /* Further adjust font size for very small screens */
+  }
+}
 </style>s

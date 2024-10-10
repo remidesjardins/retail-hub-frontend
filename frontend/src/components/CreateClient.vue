@@ -151,9 +151,11 @@ export default {
      * Upon successful creation, it closes the overlay and logs the result.
      */
     createClient() {
+      const accessToken = this.$store.state.userToken;
       // Set up the request headers
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", 'Bearer ' + accessToken);
 
       // Combine first name and last name into a single 'name' field
       const name = `${this.client.firstName} ${this.client.lastName}`;

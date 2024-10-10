@@ -124,10 +124,18 @@ export default {
      */
     async updateSale() {
       try {
+        const token = this.$store.state.userToken;
+        if (!token) {
+          alert("User token is missing.");
+          return;
+        }else{
+          console.log("USER TOKEN : ", token);
+        }
         const response = await fetch(`https://com.servhub.fr/api/sales/${this.sale._id}`, {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify(this.sale)
         });

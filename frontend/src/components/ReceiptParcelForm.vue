@@ -96,9 +96,11 @@ export default {
 
       try {
         // Fetch the current stock level from the backend using the SKU
+        const token = localStorage.getItem('authToken');
         const response = await fetch(`https://com.servhub.fr/api/products/${this.parcel.SKU}`, {
           method: 'GET',
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -136,6 +138,7 @@ export default {
         const updateResponse = await fetch(`https://com.servhub.fr/api/products/${this.parcel.SKU}`, {
           method: 'PUT',
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(placementData),

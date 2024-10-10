@@ -66,7 +66,7 @@
       </div>
 
       <!-- Action Icons: Modify and Delete Product -->
-      <div class="bottom-right-buttons">
+      <div class="bottom-right-buttons" v-if="isAdmin">
         <button @click="showUpdateForm = true" class="icon-button">
           <i class="fa-solid fa-pen-to-square"></i>
         </button>
@@ -123,6 +123,10 @@ export default {
        * @type {String}
        */
       productImage: "https://via.placeholder.com/150?text=No+Image",
+      /**
+       * Allows to know if we need to shows some features
+       */
+      isAdmin: this.$store.state.userIsAdmin
     };
   },
   computed: {
@@ -149,11 +153,14 @@ export default {
      * @param {String} productSKU - The SKU of the product to be deleted.
      */
     deleteProduct(productSKU) {
+      const token = this.$store.state.userToken;
+
       if (confirm("Are you sure you want to delete this product?")) {
         // Send DELETE request to the backend
         fetch(`https://com.servhub.fr/api/products/${productSKU}`, {
           method: 'DELETE',
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         })

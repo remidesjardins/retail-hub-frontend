@@ -89,7 +89,7 @@ export default {
        * @type {Array}
        */
       filteredSales: [],
-    };
+    }
   },
 
   methods: {
@@ -101,12 +101,23 @@ export default {
      * @async
      */
     async fetchSales() {
+      const token = localStorage.getItem('authToken');
       try {
-        const response = await fetch('https://com.servhub.fr/api/sales');
+        const response = await fetch('https://com.servhub.fr/api/sales', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
 
         if (Array.isArray(data) && data.length > 0) {
-          // Process each sale to include customer details and formatted reference
           this.sales = await Promise.all(
               data.map(async sale => {
                 const customer = await this.fetchCustomer(sale.customer_id);
@@ -119,7 +130,7 @@ export default {
                 };
               })
           );
-          this.filteredSales = this.sales; // Initially, display all sales
+          this.filteredSales = this.sales;
         }
       } catch (error) {
         console.error('Error fetching sales:', error);
@@ -148,8 +159,15 @@ export default {
      * @returns {Promise<Object|null>} - The customer data object or null if an error occurs.
      */
     async fetchCustomer(customer_id) {
+      const token = localStorage.getItem('authToken');
       try {
-        const response = await fetch(`https://com.servhub.fr/api/customers/${customer_id}`);
+        const response = await fetch(`https://com.servhub.fr/api/customers/${customer_id}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
         const customerData = await response.json();
         return customerData;
       } catch (error) {

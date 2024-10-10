@@ -81,15 +81,22 @@ export default {
      * It fetches the current stock, applies the adjustment, and updates the stock on the server.
      */
     async correctStock() {
-      // Validate that both SKU and adjustment are provided
       if (!this.correction.SKU || !this.correction.adjustment) {
         alert("Please fill in both SKU Code and Stock Adjustment.");
         return;
       }
 
+      const token = localStorage.getItem('authToken');
+
       try {
-        // Fetch the current product details using the SKU
-        const response = await fetch(`https://com.servhub.fr/api/products/${this.correction.SKU}`);
+        const response = await fetch(`https://com.servhub.fr/api/products/${this.correction.SKU}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        });
+
         if (!response.ok) {
           alert(`Error fetching product with SKU: ${this.correction.SKU}`);
           return;
@@ -97,27 +104,25 @@ export default {
 
         const product = await response.json();
 
-        // Prepare the data payload for the stock correction
         const stockCorrectionData = {
           SKU: this.correction.SKU,
           Current_stock: this.correction.adjustment,
         };
 
-        // Send a PUT request to update the product's stock on the server
         const updateResponse = await fetch(`https://com.servhub.fr/api/products/${this.correction.SKU}`, {
           method: 'PUT',
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(stockCorrectionData),
         });
 
-        // Handle the server's response
         if (updateResponse.ok) {
           const result = await updateResponse.json();
           alert(`Stock corrected successfully for SKU: ${this.correction.SKU}`);
           console.log('Stock correction response:', result);
-          this.$emit('close');  // Close the overlay after successful correction
+          this.$emit('close');
         } else {
           const errorData = await updateResponse.json();
           alert(`Error correcting stock: ${errorData.message}`);
@@ -126,7 +131,7 @@ export default {
         console.error('Error during stock correction:', error);
         alert('An error occurred while correcting the stock.');
       }
-    }
+    },
   }
 };
 </script>

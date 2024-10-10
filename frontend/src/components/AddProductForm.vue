@@ -195,7 +195,17 @@ export default {
      */
     async fetchCategories() {
       try {
-        const response = await fetch('https://com.servhub.fr/api/categories');
+        const token = this.$store.state.userToken;
+
+        const requestOptions = {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        };
+
+        const response = await fetch('https://com.servhub.fr/api/categories', requestOptions);
         if (response.ok) {
           this.categories = await response.json(); // Assuming the response is an array
         } else {
@@ -293,9 +303,17 @@ export default {
      */
     async removeCategory(category) {
       try {
-        const response = await fetch(`https://com.servhub.fr/api/categories/${category._id}`, {
-          method: 'DELETE',
-        });
+        const token = this.$store.state.userToken;
+
+        const requestOptions = {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        };
+
+        const response = await fetch(`https://com.servhub.fr/api/categories/${category._id}`, requestOptions);
         if (response.ok) {
           this.categories = this.categories.filter(
               (cat) => cat._id !== category._id
@@ -326,9 +344,11 @@ export default {
         }
 
         // Send POST request to add the product
+        const token = localStorage.getItem('authToken');
         const response = await fetch('https://com.servhub.fr/api/products', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(this.product),

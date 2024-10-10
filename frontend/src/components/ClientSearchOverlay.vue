@@ -173,8 +173,14 @@ export default {
      * Fetches the initial list of clients from the API when the component is mounted.
      */
     fetchInitialClients() {
+      const token = this.$store.state.userToken;
+      console.log("Token: ",token);
+      const myHeader = new Headers();
+      myHeader.append("Authorization", `Bearer ${token}`);
+
       const requestOptions = {
         method: "GET",
+        headers: myHeader,
         redirect: "follow",
       };
 
@@ -182,6 +188,7 @@ export default {
           .then((response) => response.json())
           .then((result) => {
             this.clients = result;
+            console.log("Result: ", result);
           })
           .catch((error) => console.error("Error fetching clients:", error));
     },
@@ -227,6 +234,7 @@ export default {
   mounted() {
     // Fetch the initial list of clients when the component is mounted
     this.fetchInitialClients();
+    console.log("Clients: ",this.clients);
   },
 };
 </script>

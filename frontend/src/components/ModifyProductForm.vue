@@ -154,6 +154,7 @@
  * Provides a form to modify existing product details within RetailHub.
  */
 import CategoryOverlay from "@/components/Category.vue";
+import LogIn from "@/views/LogIn.vue";
 
 export default {
   components: { CategoryOverlay },
@@ -215,7 +216,17 @@ export default {
      */
     async fetchCategories() {
       try {
-        const response = await fetch('https://com.servhub.fr/api/categories');
+        const token = this.$store.state.userToken;
+
+        const requestOptions = {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        };
+
+        const response = await fetch('https://com.servhub.fr/api/categories', requestOptions);
         console.log(response);
         if (response.ok) {
           this.categories = await response.json(); // Assume the response is an array of categories
@@ -245,9 +256,16 @@ export default {
      */
     async removeCategory(category) {
       try {
-        const response = await fetch(`https://com.servhub.fr/api/categories/${category._id}`, {
-          method: 'DELETE',
-        });
+        const token = this.$store.state.userToken;
+        const requestOptions = {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        };
+
+        const response = await fetch(`https://com.servhub.fr/api/categories/${category._id}`, requestOptions);
         if (response.ok) {
           this.categories = this.categories.filter(cat => cat._id !== category._id); // Use _id to filter the correct category
         } else {
@@ -263,7 +281,17 @@ export default {
      */
     async fetchProductDetails() {
       try {
-        const response = await fetch(`https://com.servhub.fr/api/products/${this.productSKU}`);
+        const token = this.$store.state.userToken;
+
+        const requestOptions = {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        };
+
+        const response = await fetch(`https://com.servhub.fr/api/products/${this.productSKU}`, requestOptions);
         const data = await response.json();
         if (data) {
           this.product = { ...this.product, ...data };
@@ -291,11 +319,14 @@ export default {
         if (selectedCategoryObj) {
           this.product.category = selectedCategoryObj.name; // Set the category name
         }
+
+        const token = this.$store.state.userToken;
         console.log("Category updated:", this.product.category);
         const response = await fetch(`https://com.servhub.fr/api/products/${this.productSKU}`, {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify(this.product),
         });

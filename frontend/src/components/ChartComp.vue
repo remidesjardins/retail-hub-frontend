@@ -98,8 +98,14 @@ export default {
      * @param {boolean} weeks - Whether to fetch weekly data.
      */
     fetchData(years, months, weeks) {
+      const accessToken = this.$store.state.userToken;
+
       const requestOptions = {
         method: "GET",
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
         redirect: "follow",
       };
 

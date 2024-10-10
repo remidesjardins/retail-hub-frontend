@@ -10,7 +10,7 @@
     this.$store.commit("initializeCart");
   },
     mounted() {
-    this.$router.push('/');
+    this.$router.push({name: 'Sale'});
   },
   };
 </script>

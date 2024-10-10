@@ -88,6 +88,7 @@ export default {
           const response = await fetch('https://com.servhub.fr/api/categories', {
             method: 'POST',
             headers: {
+              'Authorization': `Bearer ${accessToken}`,
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ name: this.newCategory }),

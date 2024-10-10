@@ -39,13 +39,13 @@
         <div class="form-group form-group-address">
           <div>
             <label for="address">Address</label>
-            <input type="text" placeholder="Street" v-model="client.addressLine1" required />
+            <input type="text" placeholder="Street" v-model="addressLine1" required />
           </div>
           <div class="input-address">
-            <input type="text" placeholder="City" v-model="client.city" required />
-            <input type="text" placeholder="State" v-model="client.state" required />
-            <input type="text" placeholder="Postal Code" v-model="client.postalCode" required />
-            <input type="text" placeholder="Country" v-model="client.country" class="full-width" required />
+            <input type="text" placeholder="City" v-model="city" required />
+            <input type="text" placeholder="State" v-model="state" required />
+            <input type="text" placeholder="Postal Code" v-model="postalCode" required />
+            <input type="text" placeholder="Country" v-model="country" class="full-width" required />
           </div>
         </div>
 
@@ -68,6 +68,25 @@ export default {
     },
   },
 
+  data(){
+    return {
+      addressLine1: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+    }
+  },
+
+  mounted() {
+    const addressParts = this.client.address.split(",");
+    this.addressLine1 = addressParts[0]?.trim() || "";
+    this.city = addressParts[1]?.trim() || "";
+    this.state = addressParts[2]?.trim() || "";
+    this.postalCode = addressParts[3]?.trim() || "";
+    this.country = addressParts[4]?.trim() || "CA"; // Default country is Canada (CA)
+  },
+
   methods: {
     /**
      * Closes the overlay without saving any changes.
@@ -82,21 +101,19 @@ export default {
      * Handles the response and potential errors.
      */
     updateClient() {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      const fullAddress = `${this.addressLine1}, ${this.city}, ${this.state}, ${this.postalCode}, ${this.country}`;
 
       const updatedClientData = JSON.stringify({
         name: this.client.name,
         email: this.client.email,
         phone: this.client.phone,
-        address: {
-          addressLine1: this.client.addressLine1,
-          city: this.client.city,
-          state: this.client.state,
-          postalCode: this.client.postalCode,
-          country: this.client.country,
-        },
+        address: fullAddress,
       });
+
+      const token = localStorage.getItem('authToken');
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${token}`);
 
       const requestOptions = {
         headers: myHeaders,

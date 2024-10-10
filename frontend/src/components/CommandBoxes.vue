@@ -28,7 +28,7 @@
       <div class="command-box" @click="onCommandClick('stockCorrection')">Stock correction</div>
 
       <!-- Command box for adding a new product -->
-      <div class="command-box" @click="onCommandClick('addProduct')">Add Product</div>
+      <div class="command-box" @click="onCommandClick('addProduct')" v-if="isAdmin">Add Product</div>
     </div>
   </div>
 
@@ -83,6 +83,11 @@ export default {
        * Controls the visibility of the PlaceProductForm component.
        */
       showPlaceProductForm: false,
+
+      /**
+       * Allows to only show the AddProduct command if the user is an ADMIN
+       */
+      isAdmin: this.$store.state.userIsAdmin
     };
   },
   methods: {
@@ -158,6 +163,7 @@ h2 {
 .command-list {
   display: flex;
   gap: 1rem;
+  overflow-x: auto;
   justify-content: start;
 }
 

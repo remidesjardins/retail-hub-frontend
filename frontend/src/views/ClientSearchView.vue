@@ -126,6 +126,7 @@
 <script>
 import CreateClient from "@/components/CreateClient.vue";
 import NavBar from "@/components/NavBar.vue";
+import {log10} from "chart.js/helpers";
 
 export default {
   components: {
@@ -185,17 +186,28 @@ export default {
      * Fetches the initial list of clients from the backend API.
      */
     fetchInitialClients() {
+      const token = localStorage.getItem('authToken');
       const requestOptions = {
         method: "GET",
-        redirect: "follow"
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        redirect: "follow",
       };
-
       fetch("https://com.servhub.fr/api/customers/", requestOptions)
-          .then((response) => response.json())
-          .then((result) => {
-            this.clients = result;
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
           })
-          .catch((error) => console.error(error));
+          .then((result) => {
+            console.log("API Result:", result);
+            this.clients = Array.isArray(result) ? result : [];
+          })
+          .catch((error) => console.error("Error fetching clients:", error));
+
     },
 
     /**

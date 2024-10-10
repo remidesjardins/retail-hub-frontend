@@ -143,9 +143,14 @@ export default {
      * Fetches detailed information about the client from the backend API.
      */
     async fetchClientInfo() {
+      const token = localStorage.getItem('authToken');
       const requestOptions = {
         method: "GET",
-        redirect: "follow"
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        redirect: "follow",
       };
 
       try {
@@ -164,8 +169,15 @@ export default {
      * Fetches all sales from the backend API and filters them to include only those related to the current client.
      */
     async fetchSales() {
+      const token = localStorage.getItem('authToken');
       try {
-        const response = await fetch('https://com.servhub.fr/api/sales');
+        const response = await fetch('https://com.servhub.fr/api/sales', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
         if (!response.ok) {
           throw new Error(`Failed to fetch sales: ${response.statusText}`);
         }
@@ -174,7 +186,6 @@ export default {
         if (Array.isArray(data) && data.length > 0) {
           this.sales = await Promise.all(
               data.map(async sale => {
-                // Check if the sale is associated with the current client
                 if (sale.customer_id === this.clientId) {
                   return {
                     _id: sale._id,
@@ -184,12 +195,11 @@ export default {
                     reference: `I-${sale._id.substring(0, 8)}`,
                   };
                 }
-                return null; // Exclude sales not related to the client
+                return null;
               })
           );
-          // Remove null values resulting from non-matching sales
           this.sales = this.sales.filter(sale => sale !== null);
-          this.filteredSales = this.sales; // Initialize with all filtered sales
+          this.filteredSales = this.sales;
         }
       } catch (error) {
         console.error('Error fetching sales:', error);

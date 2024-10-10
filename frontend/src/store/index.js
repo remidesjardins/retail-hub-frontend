@@ -4,7 +4,11 @@ import createPersistedState from 'vuex-persistedstate';
 
 const store = createStore({
     state: {
-        bagContents: []
+        bagContents: [],
+        isAuthenticated: !!localStorage.getItem('authToken'),
+        userToken: localStorage.getItem('authToken'),
+        userId: localStorage.getItem('userId'),
+        userIsAdmin: localStorage.getItem('role'),
     },
     mutations: {
         addToCart: (state, payload) => {
@@ -44,6 +48,17 @@ const store = createStore({
                 context.dispatch("handleReceipt", {payload: payload, number: 1});
             }
         },
+        login(state, { authToken, userId, userRole }) {
+            state.isAuthenticated = true;
+            state.userToken = authToken;
+            state.userId = userId;
+            state.userIsAdmin = userRole === "ADMIN";
+        },
+        logout(state) {
+            state.isAuthenticated = false;
+            state.userToken = '';
+            state.userId = undefined;
+        },
     },
     actions: {
         async handleCheckTicket({state, commit, dispatch}, payload) {
@@ -66,7 +81,19 @@ const store = createStore({
                 console.log("SKU: ", payload)
                 console.log("Number: ", number)
                 // Fetch the current stock level from the database
-                const response = await fetch(`https://com.servhub.fr/api/products/${payload.SKU}`);
+
+                const token = context.state.userToken;
+                console.log("Token: ", token);
+
+                const requestOptions = {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                };
+
+                const response = await fetch(`https://com.servhub.fr/api/products/${payload.SKU}`, requestOptions);
                 const product = await response.json();
                 console.log("SKU 2: ", product);
 
@@ -82,6 +109,7 @@ const store = createStore({
                 const updateResponse = await fetch(`https://com.servhub.fr/api/products/${payload.SKU}`, {
                     method: 'PUT',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ Current_stock: newStockLevel }),
@@ -97,6 +125,43 @@ const store = createStore({
                 alert("An error occurred while processing the request.");
             }
         },
+        async login({ commit }, { email, password }) {
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            };
+
+            try {
+                const response = await fetch("https://com.servhub.fr/api/users/login", requestOptions);
+                const result = await response.json();
+
+                if (response.ok && result.token) {
+                    console.log("Token store: ", result.token);
+                    localStorage.setItem('authToken', result.token);  // Store the token locally
+                    localStorage.setItem('userId', result.userId);  // Store the user ID locally
+                    localStorage.setItem('role', result.userRole === "ADMIN");
+                    commit("login", { authToken: result.token, userId: result.userId, userRole: result.userRole});
+                    router.push('/');  // Redirect to home page after successful login
+                } else {
+                    throw new Error(result.message || "Login failed");
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                alert("Login failed: " + error.message);  // Show the user an error message
+            }
+        },
+        logout({ commit }) {
+            commit('logout');
+            localStorage.removeItem('authToken');
+            console.log('User logged out, redirecting to login...');  // Add a debug statement
+            router.push('/login');
+        }
     },
     plugins: [createPersistedState()],
 });

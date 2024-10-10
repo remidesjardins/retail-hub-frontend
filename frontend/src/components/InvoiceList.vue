@@ -140,9 +140,15 @@ export default {
      * @param {String} saleId - The ID of the sale to be deleted.
      */
     async deleteSale(saleId) {
+      const accessToken = this.$store.state.userToken;
       if (confirm("Are you sure you want to delete this sale?")) {
         try {
-          const response = await fetch(`https://com.servhub.fr/api/sales/${saleId}`, {
+          const response = await
+              (`https://com.servhub.fr/api/sales/${saleId}`, {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
             method: 'DELETE',
           });
 
@@ -219,6 +225,7 @@ export default {
         const items = await Promise.all(sale.sale.products.map(async (product) => {
           console.log(product.SKU);
           const productDetails = await this.fetchProduct(product.SKU); // Fetch product details by SKU
+
           console.log(productDetails);
           return {
             name: productDetails.name || "Unnamed product", // Use the fetched product name
@@ -370,8 +377,16 @@ export default {
      * @throws Will throw an error if the product cannot be fetched.
      */
     async fetchProduct(SKU) {
+      const accessToken = this.$store.state.userToken;
       try {
-        const response = await fetch(`https://com.servhub.fr/api/products/${SKU}`);
+        const response = await fetch(`https://com.servhub.fr/api/products/${SKU}`, {
+          method: 'GET',
+          headers : {
+            'Authorization' : `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+
+          },
+        });
         if (!response.ok) {
           throw new Error(`Product with SKU: ${SKU} not found.`);
         }
