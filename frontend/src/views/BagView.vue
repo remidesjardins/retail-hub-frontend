@@ -799,6 +799,12 @@ button:hover {
   justify-content: space-between; /* Ensures elements are well-spaced within the summary */
   position: absolute;
   right: .5rem;
+  overflow: scroll;
+}
+
+.totals{
+  margin-top: 50px;
+  margin-bottom: 50px;
 }
 
 </style>
