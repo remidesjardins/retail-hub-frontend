@@ -25,9 +25,6 @@
         </div>
         <button type="submit" class="login-button">Log In</button>
       </form>
-      <p class="signup-link">
-        Don't have an account? <router-link to="/register">Sign Up</router-link>
-      </p>
     </div>
   </div>
 </template>
@@ -111,11 +108,6 @@ input[type="password"] {
 
 .login-button:hover {
   background-color: #36a372;
-}
-
-.signup-link {
-  margin-top: 15px;
-  text-align: center;
 }
 
 .signup-link a {
